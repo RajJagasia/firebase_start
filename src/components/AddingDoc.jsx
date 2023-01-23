@@ -1,9 +1,10 @@
 import React from "react";
 //firebase stuff
 import { app, db } from "./firebaseConfig";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import { collection, addDoc } from "firebase/firestore";
 
-function Register() {
+function AddingDoc() {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -22,34 +23,27 @@ function Register() {
   }
 
   //firebase stuff below
-
+  const collectionRef = collection(db, "users");
   const auth = getAuth();
 
   function handleSubmit() {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        console.log(userCredential);
-        const user = userCredential.user;
-        console.log(user);
-        // ...
+    addDoc(collectionRef, {
+      email: email,
+      password: password,
+      username: username
+    })
+      .then((data) => {
+        alert("Data Added" + data);
       })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        alert(errorMessage);
-        // console.log(error);
-        // console.log(errorCode);
-        // console.log(errorMessage);
-
-        // ..
+      .catch((err) => {
+        alert(err.message);
       });
   }
+
   return (
     <div className="container">
-      <h1> Register </h1>
+      <h1> Login </h1>
       <div className="form">
-        <input type="text" placeholder="Name" />
         <input
           type="text"
           name="username"
@@ -72,12 +66,13 @@ function Register() {
           onChange={handleInput}
           value={password}
         />
-        <input type="phone" placeholder="Phone" />
+        <br />
 
-        <button onClick={handleSubmit}>Register</button>
+        <button onClick={handleSubmit}>Login</button>
+        <br />
       </div>
     </div>
   );
 }
 
-export default Register;
+export default AddingDoc;
